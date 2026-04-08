@@ -1,82 +1,64 @@
-# Taller Práctico II - Consultorio Odontológico
+# 🦷 TallerPracticoII: Gestión de Citas Odontológicas
+### Consultorio Dr. Nowzaradan
 
-## 📋 Descripción
+Este proyecto es una aplicación de consola desarrollada en **Python** diseñada para automatizar la gestión de pacientes y la facturación de servicios odontológicos. El sistema integra validaciones avanzadas de datos y lógica de negocio basada en diferentes tipos de afiliación (EPS, Prepagada, Particular).
 
-Sistema de gestión de citas para el consultorio odontológico del Dr.Nowzaradan . El programa permite registrar pacientes, calcular costos de atención según el tipo de servicio, tipo de cliente y prioridad, generar estadísticas y buscar clientes por cédula.
+---
 
-## 🚀 Funcionalidades
+## 🚀 Características Principales
 
-### Registro de clientes
-- Validación de cédula (solo números, mínimo 5 dígitos)
-- Validación de nombre (solo letras, mínimo 2 caracteres)
-- Validación de teléfono (mínimo 7 dígitos)
-- Menús numéricos para selección de opciones:
-  - **Tipo de cliente**: Particular, EPS, Prepagada
-  - **Tipo de atención**: Limpieza, Calzas, Extracción, Diagnóstico
-  - **Prioridad**: Normal, Urgente
-- Validación de cantidad según tipo de atención:
-  - **Limpieza**: 1 (fijo)
-  - **Diagnóstico**: 1 (fijo)
-  - **Calzas**: 1 a 3 caries
-  - **Extracción**: 1 a 4 piezas
-- Validación de fecha (formato DD/MM/AAAA, no puede ser anterior al día actual)
+* **Validación Rigurosa de Entradas:** Implementación de lógica personalizada para:
+    * **Nombres Reales:** Detección de entradas inválidas mediante análisis de proporción de vocales y repetición de caracteres.
+    * **Fechas Inteligentes:** Restricción de citas pasadas o con más de un año de antelación.
+    * **Formatos Estrictos:** Validación de cédulas y números telefónicos.
+* **Motor de Facturación Dinámico:** Cálculo automático de costos según el procedimiento y el convenio del paciente.
+* **Control de Procedimientos:** Límites lógicos por sesión (ej. máximo 3 calzas o 4 extracciones).
+* **Módulo Estadístico:** Generación de reportes de ingresos totales y conteo de servicios al finalizar el día.
+* **Gestión de Datos:** Ordenamiento de registros por valor de atención y búsqueda indexada por cédula.
 
-### Cálculo de costos
-El valor total a pagar se calcula con la siguiente fórmula:
-Total = VALOR_CITA_FIJO + (PRECIO_BASE × CANTIDAD × MULTIPLICADOR) + RECARGO
+---
 
+## 🛠️ Tecnologías Utilizadas
 
-| Concepto | Valor |
-|----------|-------|
-| Valor cita fijo | $10 |
-| Limpieza | $30 |
-| Calzas | $80 |
-| Extracción | $100 |
-| Diagnóstico | $50 |
+* **Lenguaje:** Python 3.x
+* **Módulos Estándar:** * `datetime` (Manejo de tiempos y plazos).
+    * `re` (Expresiones regulares para limpieza de datos).
+    * `collections.Counter` (Análisis de calidad de strings).
 
-| Tipo de cliente | Multiplicador |
-|-----------------|---------------|
-| Particular | 1.0 |
-| EPS | 0.8 |
-| Prepagada | 1.2 |
+---
 
-| Prioridad | Recargo |
-|-----------|---------|
-| Normal | $0 |
-| Urgente | $20 |
+## 📊 Estructura de Costos
 
-### Estadísticas
-- Total de clientes registrados
-- Ingresos totales recibidos
-- Número de clientes para extracción
+| Tipo de Cliente | Valor Base Cita | Limpieza | Calzas (u) | Extracción (u) | Diagnóstico |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Particular** | $80,000 | $60,000 | $80,000 | $100,000 | $50,000 |
+| **EPS** | $5,000 | $0 | $40,000 | $40,000 | $0 |
+| **Prepagada** | $30,000 | $0 | $10,000 | $10,000 | $0 |
 
-### Listado ordenado
-- Muestra todos los clientes ordenados por valor de atención (de mayor a menor)
+---
 
-### Búsqueda de cliente
-- Permite buscar un cliente por su número de cédula y mostrar todos sus datos
+## 💻 Instalación y Uso
 
-## 📁 Estructura del código
-taller_practico_ii.py
-├── Constantes (PRECIOS_BASE, MULTIPLICADOR_CLIENTE, RECARGO_PRIORIDAD, VALOR_CITA_FIJO)
-├── Funciones de validación
-│ ├── menu_con_opciones() # Menús numéricos
-│ ├── validar_cedula() # Validación de cédula
-│ ├── validar_nombre() # Validación de nombre
-│ ├── validar_telefono() # Validación de teléfono
-│ ├── validar_fecha() # Validación de fecha
-│ └── validar_continuar() # Validación de continuar
-├── Bucle principal de registro
-├── Cálculos estadísticos
-├── Listado ordenado
-└── Búsqueda de cliente
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/jupis2015/TallerPracticoII.git](https://github.com/jupis2015/TallerPracticoII.git)
+    ```
+2.  **Ejecutar la aplicación:**
+    ```bash
+    python gestion_odontologica.py
+    ```
 
+---
 
-## ▶️ Ejecución
+## 🧠 Lógica de Validación (Ingeniería de Sistemas)
 
-### Requisitos
-- Python 3.6 o superior
+Para asegurar la integridad de la base de datos, el sistema no solo verifica tipos de datos, sino también la **verosimilitud** del nombre ingresado:
+1.  Calcula que al menos el **20%** de los caracteres sean vocales.
+2.  Valida que ninguna letra represente más del **60%** del total del nombre.
+3.  Esto previene ingresos accidentales como `"asdfghjkl"` o `"aaaaaaa"`.
 
-### Ejecutar el programa
-```bash
-python taller_practico_ii.py
+---
+
+**Autor:** Henry Franco Velez  
+**Facultad:** Ingeniería de Sistemas  
+**Asignatura:** Programación de Sistemas / Taller Práctico II
