@@ -1,7 +1,7 @@
 # 🦷 TallerPracticoII: Gestión de Citas Odontológicas
 ### Consultorio Dr. Nowzaradan
 
-Este proyecto es una aplicación de consola desarrollada en **Python** diseñada para automatizar la gestión de pacientes y la facturación de servicios odontológicos. El sistema integra validaciones avanzadas de datos y lógica de negocio basada en diferentes tipos de afiliación (EPS, Prepagada, Particular).
+Este proyecto es una aplicación de consola desarrollada en **PythonPython 3.13.3** diseñada para automatizar la gestión de pacientes y la facturación de servicios odontológicos. El sistema integra validaciones avanzadas de datos y lógica de negocio basada en diferentes tipos de afiliación (EPS, Prepagada, Particular).
 
 ---
 
@@ -20,7 +20,7 @@ Este proyecto es una aplicación de consola desarrollada en **Python** diseñada
 
 ## 🛠️ Tecnologías Utilizadas
 
-* **Lenguaje:** Python 3.x
+* **Lenguaje:** Python 3.13.3
 * **Módulos Estándar:** * `datetime` (Manejo de tiempos y plazos).
     * `re` (Expresiones regulares para limpieza de datos).
     * `collections.Counter` (Análisis de calidad de strings).
