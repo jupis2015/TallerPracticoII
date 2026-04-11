@@ -4,14 +4,14 @@
 import re
 from datetime import datetime, timedelta
 
-# Valores de cita por tipo de cliente
+# Los precios de la cita según el tipo de cliente
 VALOR_CITA = {
     "Particular": 80000,
     "EPS": 5000,
     "Prepagada": 30000
 }
 
-# Valores de atención por tipo de cliente y tipo de atención
+# Los precios de los tratamientos según el tipo de cliente
 VALORES_ATENCION = {
     "Particular": {
         "Limpieza": 60000,
@@ -33,167 +33,156 @@ VALORES_ATENCION = {
     }
 }
 
-# Lista para almacenar todos los clientes
+# Aquí guardamos todos los clientes
 clientes = []
 
 
-# Función para mostrar menú y validar opción numérica
+# Esta función muestra un menú y pide que escojas una opción
 def menu_con_opciones(titulo, opciones):
-    """
-    Muestra un menú con opciones numeradas y retorna la opción seleccionada.
-    opciones: lista de strings con las opciones a mostrar
-    """
     print(f"\n--- {titulo} ---")
     for i, opcion in enumerate(opciones, 1):
         print(f"{i}. {opcion}")
 
     while True:
         try:
-            seleccion = int(input("Seleccione una opción (número): "))
+            seleccion = int(input("Escoja una opción (número): "))
             if 1 <= seleccion <= len(opciones):
                 return opciones[seleccion - 1]
             else:
-                print(f"Opción inválida. Seleccione un número entre 1 y {len(opciones)}.")
+                print(f"Esa opción no sirve. Escoja entre 1 y {len(opciones)}.")
         except ValueError:
-            print("Debe ingresar un número válido.")
+            print("Tiene que escribir un número.")
 
 
-# Función para validar cédula (solo números, mínimo 5 dígitos)
+# Validar que la cédula tenga solo números
 def validar_cedula(mensaje):
     while True:
         cedula = input(mensaje).strip()
         if cedula.isdigit() and len(cedula) >= 5:
             return cedula
-        print("Cédula inválida. Debe contener solo números y al menos 5 dígitos.")
+        print("Cédula no válida. Solo números y mínimo 5 dígitos.")
 
 
+# Validar que el nombre no tenga cosas raras
 def validar_nombre(mensaje):
     while True:
         nombre = input(mensaje).strip()
         
-        # Validaciones básicas
         if not nombre or len(nombre) < 2:
-            print("❌ Nombre inválido. Debe tener al menos 2 caracteres.")
+            print("ERROR Nombre muy corto, mínimo 2 caracteres.")
             continue
             
-        # Validar que solo contenga letras, espacios, y algunos acentos comunes
+        # Solo letras y espacios
         if not all(c.isalpha() or c.isspace() or c in "áéíóúñÁÉÍÓÚÑ" for c in nombre):
-            print("❌ Nombre inválido. Use solo letras y espacios.")
+            print("❌ Use solo letras y espacios, sin números ni símbolos.")
             continue
         
-        # Validar que no tenga más de 2 espacios seguidos
+        # Nada de espacios dobles
         if "  " in nombre:
-            print("❌ Nombre inválido. No use espacios dobles.")
+            print("❌ Sin espacios dobles por favor.")
             continue
         
-        # Validar proporción de vocales (los nombres reales tienen vocales)
+        # Que tenga vocales (porque los nombres de verdad tienen vocales)
         letras = [c for c in nombre if c.isalpha()]
         if len(letras) < 2:
-            print("❌ Nombre inválido. Demasiado corto.")
+            print("❌ Demasiado corto.")
             continue
             
         vocales = sum(1 for c in letras if c.lower() in "aeiouáéíóú")
         consonantes = len(letras) - vocales
         
-        # Un nombre real debe tener al menos 20% de vocales
         if vocales == 0 or (vocales / len(letras)) < 0.2:
-            print("❌ Nombre inválido. Parece no ser un nombre real (sin vocales suficientes).")
+            print("❌ Eso no parece un nombre real, ¿dónde están las vocales?")
             continue
         
-        # Validar que no tenga repeticiones excesivas de la misma letra
+        # Que no repita mucho la misma letra
         from collections import Counter
         conteo = Counter(c.lower() for c in letras)
         max_repeticion = max(conteo.values())
-        if max_repeticion > len(letras) * 0.6:  # Una letra no puede ser más del 60%
-            print("❌ Nombre inválido. Demasiadas letras repetidas.")
+        if max_repeticion > len(letras) * 0.6:
+            print("❌ Demasiadas letras repetidas, eso es sospechoso.")
             continue
         
         return nombre.title()
 
 
-# Función para validar teléfono (solo números, sin caracteres especiales)
+# Validar teléfono (solo números y que tenga sentido)
 def validar_telefono(mensaje):
     while True:
         telefono = input(mensaje).strip()
         
-        # Validar que solo contenga números
         if not telefono.isdigit():
-            print("❌ Teléfono inválido. Use solo números, sin espacios, guiones ni otros caracteres.")
-            print("   Ejemplo: 3012762712")
+            print("❌ Solo números, sin guiones ni espacios. Ejemplo: 3012762712")
             continue
         
-        # Validar longitud (mínimo 7 dígitos, máximo 15)
         if len(telefono) < 7:
-            print(f"❌ Teléfono inválido. Debe tener al menos 7 dígitos. Ingresó {len(telefono)} dígito(s).")
+            print(f"❌ El teléfono es muy corto. Mínimo 7 dígitos (ingresó {len(telefono)})")
             continue
         
         if len(telefono) > 15:
-            print(f"❌ Teléfono inválido. Máximo 15 dígitos. Ingresó {len(telefono)} dígito(s).")
+            print(f"❌ Demasiados números. Máximo 15 dígitos (ingresó {len(telefono)})")
             continue
         
-        # Validación extra: evitar números sospechosos (todos iguales)
+        # Que no sea 1111111 o algo así
         if len(set(telefono)) == 1:
-            print("❌ Teléfono inválido. Número no válido (todos los dígitos iguales).")
+            print("❌ Ese número no es válido (todos los dígitos iguales).")
             continue
         
-        print(f"✅ Teléfono válido: {telefono}")
+        print(f"✅ Teléfono guardado: {telefono}")
         return telefono
 
 
-# Función para validar fecha (DD/MM/AAAA y que sea una fecha real)
+# Validar fecha (formato y que no sea muy lejos)
 def validar_fecha(mensaje, max_dias=365):
     while True:
         fecha = input(mensaje).strip()
         try:
-            # Intentar parsear la fecha
             fecha_obj = datetime.strptime(fecha, "%d/%m/%Y")
             fecha_actual = datetime.now().date()
             fecha_ingresada = fecha_obj.date()
             
-            # Calcular diferencia en días
             diferencia_dias = (fecha_ingresada - fecha_actual).days
             
-            # Validaciones
             if fecha_ingresada < fecha_actual:
-                print("❌ La fecha no puede ser anterior al día de hoy.")
+                print("❌ No se pueden agendar citas en el pasado.")
             elif diferencia_dias > max_dias:
                 fecha_limite = fecha_actual + timedelta(days=max_dias)
-                print(f"❌ La fecha no puede superar {max_dias} días a partir de hoy.")
-                print(f"📅 Fecha límite permitida: {fecha_limite.strftime('%d/%m/%Y')}")
+                print(f"❌ Muy lejos, máximo {max_dias} días.")
+                print(f"📅 Fecha tope: {fecha_limite.strftime('%d/%m/%Y')}")
             else:
-                print(f"✅ Fecha válida: {fecha}")
+                print(f"✅ Fecha agendada: {fecha}")
                 return fecha
         except ValueError:
-            print("❌ Fecha inválida. Use el formato DD/MM/AAAA (ejemplo: 25/12/2024)")
+            print("❌ Formato incorrecto. Use DD/MM/AAAA (ejemplo: 25/12/2024)")
 
 
-# Función para validar continuar (solo s o n)
+# Preguntar si quiere seguir o no
 def validar_continuar(mensaje):
     while True:
         respuesta = input(mensaje).strip().lower()
         if respuesta in ['s', 'n']:
             return respuesta
-        print("Opción inválida. Responda 's' para sí o 'n' para no.")
+        print("Escriba 's' para sí o 'n' para no.")
 
 
-# Captura de datos
+# Empieza el programa
 print("=== REGISTRO DE CITAS ODONTOLÓGICAS ===")
 
 while True:
     print("\n--- Nuevo cliente ---")
 
     cedula = validar_cedula("Cédula: ")
-    nombre = validar_nombre("Nombre: ")
+    nombre = validar_nombre("Nombre Completo: ")
     telefono = validar_telefono("Teléfono: ")
 
-    # Menú para tipo de cliente
+    # Qué tipo de cliente es
     tipo_cliente = menu_con_opciones("TIPO DE CLIENTE", [
         "Particular",
         "EPS",
         "Prepagada"
     ])
 
-    # Menú para tipo de atención
+    # Qué se va a hacer
     tipo_atencion = menu_con_opciones("TIPO DE ATENCIÓN", [
         "Limpieza",
         "Calzas",
@@ -201,43 +190,43 @@ while True:
         "Diagnóstico"
     ])
 
-    # Cantidad según tipo de atención con límites máximos
+    # Cuántas cosas según el tratamiento
     if tipo_atencion == "Limpieza":
         cantidad = 1
-        print("Cantidad fijada en 1 para limpieza.")
+        print("La limpieza solo se puede agendar de a 1.")
     elif tipo_atencion == "Diagnóstico":
         cantidad = 1
-        print("Cantidad fijada en 1 para diagnóstico.")
+        print("El diagnóstico solo se puede agendar de a 1.")
     elif tipo_atencion == "Calzas":
         while True:
             try:
                 print("\n--- CALZAS ---")
                 print("Máximo 3 caries por cita")
-                cantidad = int(input("Cantidad de caries a tratar: "))
+                cantidad = int(input("Cuántas caries va a tratar: "))
                 if 1 <= cantidad <= 3:
                     break
                 elif cantidad <= 0:
-                    print("La cantidad debe ser mayor que cero.")
+                    print("Tiene que ser más de cero.")
                 else:
-                    print(f"La cantidad máxima para calzas es 3 por cita. Ingresó: {cantidad}")
+                    print(f"Se pueden hacer máximo 3 calzas, usted puso {cantidad}")
             except ValueError:
-                print("Debe ingresar un número entero.")
+                print("Escriba un número entero.")
     elif tipo_atencion == "Extracción":
         while True:
             try:
                 print("\n--- EXTRACCIÓN ---")
-                print("Máximo 4 piezas por cita")
-                cantidad = int(input("Cantidad de piezas a extraer: "))
+                print("Máximo 4 dientes por cita")
+                cantidad = int(input("Cuántos dientes va a sacar: "))
                 if 1 <= cantidad <= 4:
                     break
                 elif cantidad <= 0:
-                    print("La cantidad debe ser mayor que cero.")
+                    print("Tiene que ser más de cero.")
                 else:
-                    print(f"La cantidad máxima para extracción es 4 por cita. Ingresó: {cantidad}")
+                    print(f"Máximo 4 extracciones, usted puso {cantidad}")
             except ValueError:
-                print("Debe ingresar un número entero.")
+                print("Escriba un número entero.")
 
-    # Menú para prioridad (se mantiene pero sin efecto en el precio)
+    # Urgente o normal (aunque no cambia el precio)
     prioridad = menu_con_opciones("PRIORIDAD", [
         "Normal",
         "Urgente"
@@ -245,14 +234,14 @@ while True:
 
     fecha = validar_fecha("Fecha de la cita (DD/MM/AAAA): ")
 
-    # Cálculo: Valor a pagar = valor de la cita + (valor de atención × cantidad)
+    # Hacer las cuentas
     valor_cita = VALOR_CITA[tipo_cliente]
     valor_atencion_unitario = VALORES_ATENCION[tipo_cliente][tipo_atencion]
     valor_atencion_total = valor_atencion_unitario * cantidad
     
     total_pagar = valor_cita + valor_atencion_total
 
-    # Guardar datos en un diccionario
+    # Guardar los datos del cliente
     cliente = {
         "cedula": cedula,
         "nombre": nombre,
@@ -268,44 +257,44 @@ while True:
     }
     clientes.append(cliente)
 
-    # Mostrar resumen del registro
+    # Mostrar resumen
     print(f"\n=== CLIENTE REGISTRADO ===")
-    print(f"Nombre: {nombre}")
+    print(f"Nombre Completo: {nombre}")
     print(f"Tipo de cliente: {tipo_cliente}")
-    print(f"Tipo de atención: {tipo_atencion}")
+    print(f"Procedimiento: {tipo_atencion}")
     print(f"Cantidad: {cantidad}")
     print(f"Valor cita: ${valor_cita:,.0f}")
-    print(f"Valor atención: ${valor_atencion_total:,.0f}")
+    print(f"Valor tratamiento: ${valor_atencion_total:,.0f}")
     print(f"Total a pagar: ${total_pagar:,.0f}")
 
-    continuar = validar_continuar("\n¿Desea registrar otro cliente? (s/n): ")
+    continuar = validar_continuar("\n¿Registrar otro cliente? (s/n): ")
     if continuar == 'n':
         break
 
-# Verificar si hay clientes registrados
+# Si no hay nadie registrado
 if not clientes:
-    print("\nNo se registró ningún cliente. Programa finalizado.")
+    print("\nNo se registró nada. Programa terminado.")
 else:
-    # Cálculos estadísticos
+    # Sacar cuentas
     total_clientes = len(clientes)
     ingresos_totales = sum(c["total"] for c in clientes)
     clientes_extraccion = sum(1 for c in clientes if c["tipo_atencion"] == "Extracción")
 
-    print("\n=== RESULTADOS ESTADÍSTICOS ===")
-    print(f"Total de clientes: {total_clientes}")
-    print(f"Ingresos totales recibidos: ${ingresos_totales:,.0f}")
-    print(f"Número de clientes para extracción: {clientes_extraccion}")
+    print("\n=== ESTADÍSTICAS RÁPIDAS ===")
+    print(f"Total clientes atendidos: {total_clientes}")
+    print(f"Plata recibida: ${ingresos_totales:,.0f}")
+    print(f"Clientes que sacaron dientes: {clientes_extraccion}")
 
-    # Ordenar clientes por valor de la atención (de mayor a menor)
+    # Ordenar de mayor a menor por lo que pagaron en tratamiento
     clientes_ordenados = sorted(clientes, key=lambda c: c["valor_atencion"], reverse=True)
 
-    print("\n=== LISTA ORDENADA POR VALOR DE ATENCIÓN (MAYOR A MENOR) ===")
+    print("\n=== LISTA DE CLIENTES (el que más pagó en tratamiento primero) ===")
     for i, c in enumerate(clientes_ordenados, 1):
-        print(f"{i}. {c['nombre']} (Cédula: {c['cedula']}) - Valor atención: ${c['valor_atencion']:,.0f} - Total: ${c['total']:,.0f}")
+        print(f"{i}. {c['nombre']} (C.C. {c['cedula']}) - Pagó en tratamiento: ${c['valor_atencion']:,.0f} - Total: ${c['total']:,.0f}")
 
-    # Búsqueda de cliente por cédula en la lista ordenada
-    print("\n=== BÚSQUEDA DE CLIENTE ===")
-    buscar_cedula = input("Ingrese la cédula del cliente a buscar: ")
+    # Buscar cliente por cédula
+    print("\n=== BUSCAR CLIENTE ===")
+    buscar_cedula = input("Escriba la cédula a buscar: ")
     encontrado = None
     for cliente in clientes_ordenados:
         if cliente["cedula"] == buscar_cedula:
@@ -313,19 +302,19 @@ else:
             break
 
     if encontrado:
-        print("\n=== DATOS DEL CLIENTE ===")
+        print("\n=== ACÁ ESTÁ EL CLIENTE ===")
         print(f"Cédula: {encontrado['cedula']}")
-        print(f"Nombre: {encontrado['nombre']}")
+        print(f"Nombre Completo: {encontrado['nombre']}")
         print(f"Teléfono: {encontrado['telefono']}")
         print(f"Tipo de cliente: {encontrado['tipo_cliente']}")
-        print(f"Tipo de atención: {encontrado['tipo_atencion']}")
+        print(f"Tratamiento: {encontrado['tipo_atencion']}")
         print(f"Cantidad: {encontrado['cantidad']}")
         print(f"Prioridad: {encontrado['prioridad']}")
         print(f"Fecha: {encontrado['fecha']}")
         print(f"Valor cita: ${encontrado['valor_cita']:,.0f}")
-        print(f"Valor atención: ${encontrado['valor_atencion']:,.0f}")
+        print(f"Valor tratamiento: ${encontrado['valor_atencion']:,.0f}")
         print(f"Total a pagar: ${encontrado['total']:,.0f}")
     else:
-        print("No se encontró ningún cliente con esa cédula.")
+        print("No encontré a nadie con esa cédula.")
 
-print("\n=== FIN DEL PROGRAMA ===")
+print("\n=== QUE TENGAS UN BUEN DÍA ===")
