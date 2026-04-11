@@ -74,25 +74,25 @@ def validar_nombre(mensaje):
             
         # Solo letras y espacios
         if not all(c.isalpha() or c.isspace() or c in "áéíóúñÁÉÍÓÚÑ" for c in nombre):
-            print("❌ Use solo letras y espacios, sin números ni símbolos.")
+            print("ERROR Use solo letras y espacios, sin números ni símbolos.")
             continue
         
         # Nada de espacios dobles
         if "  " in nombre:
-            print("❌ Sin espacios dobles por favor.")
+            print("ERROR Sin espacios dobles por favor.")
             continue
         
         # Que tenga vocales (porque los nombres de verdad tienen vocales)
         letras = [c for c in nombre if c.isalpha()]
         if len(letras) < 2:
-            print("❌ Demasiado corto.")
+            print("ERROR Demasiado corto.")
             continue
             
         vocales = sum(1 for c in letras if c.lower() in "aeiouáéíóú")
         consonantes = len(letras) - vocales
         
         if vocales == 0 or (vocales / len(letras)) < 0.2:
-            print("❌ Eso no parece un nombre real, ¿dónde están las vocales?")
+            print("ERROR Eso no parece un nombre real, ¿dónde están las vocales?")
             continue
         
         # Que no repita mucho la misma letra
@@ -100,7 +100,7 @@ def validar_nombre(mensaje):
         conteo = Counter(c.lower() for c in letras)
         max_repeticion = max(conteo.values())
         if max_repeticion > len(letras) * 0.6:
-            print("❌ Demasiadas letras repetidas, eso es sospechoso.")
+            print("ERROR Demasiadas letras repetidas, eso es sospechoso.")
             continue
         
         return nombre.title()
@@ -112,23 +112,23 @@ def validar_telefono(mensaje):
         telefono = input(mensaje).strip()
         
         if not telefono.isdigit():
-            print("❌ Solo números, sin guiones ni espacios. Ejemplo: 3012762712")
+            print("ERROR Solo números, sin guiones ni espacios. Ejemplo: 3012762712")
             continue
         
         if len(telefono) < 7:
-            print(f"❌ El teléfono es muy corto. Mínimo 7 dígitos (ingresó {len(telefono)})")
+            print(f"ERROR El teléfono es muy corto. Mínimo 7 dígitos (ingresó {len(telefono)})")
             continue
         
         if len(telefono) > 15:
-            print(f"❌ Demasiados números. Máximo 15 dígitos (ingresó {len(telefono)})")
+            print(f"ERROR Demasiados números. Máximo 15 dígitos (ingresó {len(telefono)})")
             continue
         
         # Que no sea 1111111 o algo así
         if len(set(telefono)) == 1:
-            print("❌ Ese número no es válido (todos los dígitos iguales).")
+            print("ERROR Ese número no es válido (todos los dígitos iguales).")
             continue
         
-        print(f"✅ Teléfono guardado: {telefono}")
+        print(f"Teléfono guardado: {telefono}")
         return telefono
 
 
@@ -144,16 +144,16 @@ def validar_fecha(mensaje, max_dias=365):
             diferencia_dias = (fecha_ingresada - fecha_actual).days
             
             if fecha_ingresada < fecha_actual:
-                print("❌ No se pueden agendar citas en el pasado.")
+                print("ERROR No se pueden agendar citas en el pasado.")
             elif diferencia_dias > max_dias:
                 fecha_limite = fecha_actual + timedelta(days=max_dias)
-                print(f"❌ Muy lejos, máximo {max_dias} días.")
-                print(f"📅 Fecha tope: {fecha_limite.strftime('%d/%m/%Y')}")
+                print(f"ERROR Muy lejos, máximo {max_dias} días.")
+                print(f"Fecha tope: {fecha_limite.strftime('%d/%m/%Y')}")
             else:
-                print(f"✅ Fecha agendada: {fecha}")
+                print(f"Fecha agendada: {fecha}")
                 return fecha
         except ValueError:
-            print("❌ Formato incorrecto. Use DD/MM/AAAA (ejemplo: 25/12/2024)")
+            print("ERROR Formato incorrecto. Use DD/MM/AAAA (ejemplo: 25/12/2024)")
 
 
 # Preguntar si quiere seguir o no
