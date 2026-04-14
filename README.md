@@ -41,11 +41,11 @@ Este proyecto es una aplicación de consola desarrollada en **PythonPython 3.13.
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://github.com/jupis2015/TallerPracticoII.git](https://github.com/jupis2015/TallerPracticoII.git)
+    git clone https://github.com/jupis2015/TallerPracticoII.git
     ```
 2.  **Ejecutar la aplicación:**
     ```bash
-    python gestion_odontologica.py
+    python consultorio.py
     ```
 
 ---
