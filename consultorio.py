@@ -1,6 +1,5 @@
 # Proyecto: TallerPracticoII
 # Programa para gestionar citas del consultorio odontológico del Dr.Chapatin
-#estamos realizando unos cambios para subir una actulizacion
 
 import re
 from datetime import datetime, timedelta
